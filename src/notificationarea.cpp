@@ -34,6 +34,8 @@
 #include <LayerShellQt/shell.h>
 #include <LayerShellQt/window.h>
 
+QMargins margins(50, 30, 50, 50);
+
 
 NotificationArea::NotificationArea(QWidget *parent)
     : QScrollArea(parent),
@@ -89,8 +91,9 @@ NotificationArea::NotificationArea(QWidget *parent)
             {
                 layershell->setLayer(LayerShellQt::Window::Layer::LayerOverlay);
                 layershell->setKeyboardInteractivity(LayerShellQt::Window::KeyboardInteractivityNone);
-              //  LayerShellQt::Window::Anchors anchors = {LayerShellQt::Window::AnchorTop};
-              //  layershell->setAnchors(anchors);
+                layershell->setMargins(margins);
+                LayerShellQt::Window::Anchors anchors = {LayerShellQt::Window::AnchorTop|                LayerShellQt::Window::AnchorRight};
+                layershell->setAnchors(anchors);
             }
         }
     }

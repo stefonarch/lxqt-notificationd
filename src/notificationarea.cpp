@@ -31,6 +31,8 @@
 #include <LXQt/Globals>
 #include <LXQt/Settings>
 #include "notificationarea.h"
+#include <LayerShellQt/shell.h>
+#include <LayerShellQt/window.h>
 
 
 NotificationArea::NotificationArea(QWidget *parent)
@@ -43,6 +45,10 @@ NotificationArea::NotificationArea(QWidget *parent)
     setWindowFlags(Qt::X11BypassWindowManagerHint
                    | Qt::FramelessWindowHint
                    | Qt::WindowStaysOnTopHint);
+     // Check platform
+     bool underWayland = QGuiApplication::platformName() == QStringLiteral("wayland");
+     if (underWayland)
+       LayerShellQt::Shell::useLayerShell();
     // Hack to ensure the fully transparent QGraphicsView background
     QPalette palette;
     palette.setBrush(QPalette::Base, Qt::NoBrush);
@@ -73,6 +79,20 @@ NotificationArea::NotificationArea(QWidget *parent)
     for (const auto& screen : screens)
     {
         connect(screen, &QScreen::availableGeometryChanged, this, &NotificationArea::availableGeometryChanged);
+    }
+        if (underWayland)
+    {
+        winId();
+        if(QWindow* win = windowHandle())
+        {
+            if(LayerShellQt::Window* layershell = LayerShellQt::Window::get(win))
+            {
+                layershell->setLayer(LayerShellQt::Window::Layer::LayerOverlay);
+                layershell->setKeyboardInteractivity(LayerShellQt::Window::KeyboardInteractivityNone);
+              //  LayerShellQt::Window::Anchors anchors = {LayerShellQt::Window::AnchorTop};
+              //  layershell->setAnchors(anchors);
+            }
+        }
     }
 }
 
